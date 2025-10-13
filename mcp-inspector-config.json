@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "google-calendar-mcp": {
-      "command": "node",
-      "args": ["dist/index.js"],
+    "mcp-google-calendar": {
+      "command": "npx",
+      "args": ["-y", "@pablosr/mcp-google-calendar"],
       "env": {
         "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
         "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",

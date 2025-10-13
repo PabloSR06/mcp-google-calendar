@@ -8,8 +8,8 @@ import { GoogleCalendarClient } from "./tools/google-calendar.js"
 import { registerGoogleCalendarTools } from "./tools/google-calendar-mcp.js"
 
 const server = new McpServer({
-  name: "google-calendar-mcp",
-  version: "1.0.0",
+  name: "mcp-google-calendar",
+  version: "1.0.1",
 })
 
 async function main() {

@@ -1,0 +1,27 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Config files
+tsconfig.json
+eslint.config.mjs
+mcp-inspector-config.json
+
+# Development files
+.env
+.env.example
+.git
+.gitignore
+
+# Documentation
+*.md
+
+# Scripts
+scripts/
+
+# Tests
+test/
+tests/
+*.test.js
+*.spec.js

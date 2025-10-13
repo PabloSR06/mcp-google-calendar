@@ -1,12 +1,12 @@
-# google-calendar-mcp
+# mcp-google-calendar
 
 
-A Google Calendar Model Context Protocol (MCP) server to expose calendar operations as tools for LLM.
+A Google Calendar (MCP) server to expose calendar operations as tools for LLM.
 
 
 ## Table of Contents
 
-- [google-calendar-mcp](#google-calendar-mcp)
+- [mcp-google-calendar](#mcp-google-calendar)
   - [Table of Contents](#table-of-contents)
   - [Important: Authentication Architecture](#important-authentication-architecture)
     - [Current Implementation](#current-implementation)
@@ -124,10 +124,6 @@ npm run build
 node dist/index.js
 ```
 
-If everything is configured correctly, you'll see:
-```
-✅ Google Calendar configured correctly
-```
 
 ### MCP Client Configuration
 
@@ -138,7 +134,7 @@ Add this to your MCP client configuration (e.g., Claude Desktop config):
   "mcpServers": {
     "google-calendar": {
       "command": "npx",
-      //WIP: "args": ["google-calendar-mcp"],
+      //WIP: "args": ["mcp-google-calendar"],
       "env": {
         "GOOGLE_CLIENT_ID": "<your-client-id>",
         "GOOGLE_CLIENT_SECRET": "<your-client-secret>",
@@ -183,7 +179,7 @@ GOOGLE_REFRESH_TOKEN=your-refresh-token
 ```json
 {
   "mcpServers": {
-    "google-calendar-mcp": {
+    "mcp-google-calendar": {
       "command": "node",
       "args": ["dist/index.js"],
       "env": {
