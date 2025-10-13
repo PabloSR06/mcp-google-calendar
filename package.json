@@ -1,0 +1,48 @@
+{
+  "name": "google-calendar-mcp",
+  "description": "A Google Calendar Model Context Protocol (MCP) server to expose calendar operations as tools for LLM.",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "google-calendar-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "watch": "tsc --watch",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/.",
+    "format:check": "prettier --check src/.",
+    "setup:google": "node scripts/setup-google-oauth.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PabloSR06/google-calendar-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PabloSR06/google-calendar-mcp/issues"
+  },
+  "homepage": "https://github.com/PabloSR06/google-calendar-mcp#readme",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "@modelcontextprotocol/sdk": "^1.13.0",
+    "dotenv": "^16.5.0",
+    "googleapis": "^162.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/node": "^24.0.3",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "3.5.3",
+    "shx": "^0.4.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.1"
+  }
+}

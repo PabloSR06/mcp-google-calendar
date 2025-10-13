@@ -1,0 +1,309 @@
+# google-calendar-mcp
+
+
+A Google Calendar Model Context Protocol (MCP) server to expose calendar operations as tools for LLM.
+
+
+## Table of Contents
+
+- [google-calendar-mcp](#google-calendar-mcp)
+  - [Table of Contents](#table-of-contents)
+  - [Important: Authentication Architecture](#important-authentication-architecture)
+    - [Current Implementation](#current-implementation)
+    - [Multi-User Scenarios](#multi-user-scenarios)
+  - [Setup](#setup)
+    - [Prerequisites](#prerequisites)
+    - [Step-by-step Configuration](#step-by-step-configuration)
+      - [1. Configure Google Cloud Console Project](#1-configure-google-cloud-console-project)
+      - [2. Create OAuth 2.0 Credentials](#2-create-oauth-20-credentials)
+      - [3. Configure the .env file](#3-configure-the-env-file)
+      - [4. Get the refresh token](#4-get-the-refresh-token)
+      - [5. Test the configuration](#5-test-the-configuration)
+    - [MCP Client Configuration](#mcp-client-configuration)
+  - [Usage](#usage)
+  - [Testing with MCP Inspector](#testing-with-mcp-inspector)
+  - [Security](#security)
+  - [Additional Resources](#additional-resources)
+  - [Available Tools](#available-tools)
+    - [google-create-event](#google-create-event)
+    - [google-update-event](#google-update-event)
+    - [google-list-events](#google-list-events)
+    - [google-search-events](#google-search-events)
+    - [google-delete-event](#google-delete-event)
+    - [google-list-calendars](#google-list-calendars)
+    - [google-get-current-datetime](#google-get-current-datetime)
+  - [License](#license)
+
+
+## Important: Authentication Architecture
+
+**This MCP server is configured to use a single Google account for all operations.** The authentication credentials (client ID, client secret, and refresh token) are stored in environment variables (`.env` file), meaning all users of this MCP server will interact with the same Google Calendar account.
+
+### Current Implementation
+- **Single Account Mode**: One Google account's credentials are configured in the `.env` file
+- **All operations** (create, read, update, delete events) are performed on this single account
+- **Best for**: Personal use, single-user applications, or shared team calendars
+
+### Multi-User Scenarios
+If you need **each user to authenticate with their own Google account**, this server would require modifications:
+
+1. **Add user authentication layer**: Implement a user authentication system (OAuth2, sessions, JWT, etc.)
+2. **Pass user context**: Modify the MCP tools to use the authenticated user's token instead of the `.env` token
+3. **Token refresh logic**: Implement per-user token refresh and management
+
+> **Note**: The current implementation prioritizes simplicity for personal use.
+
+
+## Setup
+
+### Prerequisites
+
+1. A Google account
+2. Access to Google Cloud Console
+3. Node.js installed
+
+### Step-by-step Configuration
+
+#### 1. Configure Google Cloud Console Project
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the [**Google Calendar API**](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com):
+   - Go to "APIs & Services" > "Library"
+   - Search for "Google Calendar API"
+   - Click "Enable"
+
+#### 2. Create OAuth 2.0 Credentials
+
+1. Go to "APIs & Services" > "Credentials"
+2. Click "Create Credentials" > "OAuth 2.0 Client ID"
+3. If it's your first time, configure the OAuth consent screen:
+   - Select "External" (or "Internal" if you have Google Workspace)
+   - Complete the basic app information
+   - In "Scopes", don't add any scope (we'll do this programmatically)
+   - Add your email as a test user
+4. Create the OAuth 2.0 Client ID:
+   - Application type: "Web application"
+   - Name: "Google Calendar MCP Server"
+   - Authorized redirect URIs: `http://localhost:8080/oauth/callback`
+
+#### 3. Configure the .env file
+
+1. Copy the credentials from Google Cloud Console
+2. Create a `.env` file in the project root:
+
+```bash
+# Google Cloud Console credentials
+GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_client_secret_here
+GOOGLE_REDIRECT_URL=http://localhost:8080/oauth/callback
+
+# This will be generated in the next step
+GOOGLE_REFRESH_TOKEN=
+```
+
+#### 4. Get the refresh token
+
+Run the setup script:
+
+```bash
+npm run setup:google
+```
+
+This script will:
+1. Start a temporary server on port 8080
+2. Show you a URL to authorize the application
+3. Open that URL in your browser
+4. After authorizing, give you a `refresh_token`
+5. Return token `GOOGLE_REFRESH_TOKEN`
+
+#### 5. Test the configuration
+
+```bash
+npm run build
+node dist/index.js
+```
+
+If everything is configured correctly, you'll see:
+```
+✅ Google Calendar configured correctly
+```
+
+### MCP Client Configuration
+
+Add this to your MCP client configuration (e.g., Claude Desktop config):
+
+```json
+{
+  "mcpServers": {
+    "google-calendar": {
+      "command": "npx",
+      //WIP: "args": ["google-calendar-mcp"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "<your-client-id>",
+        "GOOGLE_CLIENT_SECRET": "<your-client-secret>",
+        "GOOGLE_REDIRECT_URL": "http://localhost:8080/oauth/callback",
+        "GOOGLE_REFRESH_TOKEN": "<your-refresh-token>"
+      }
+    }
+  }
+}
+```
+
+## Usage
+
+1. Compile TypeScript to JavaScript:
+```bash
+npm run build
+```
+
+2. Run the MCP server:
+```bash
+node dist/index.js
+```
+
+## Testing with MCP Inspector
+
+You can test and debug this MCP server using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
+
+1. Make sure you have built the project:
+```bash
+npm run build
+```
+
+2. Set up your environment variables in `.env` file:
+```bash
+GOOGLE_CLIENT_ID=your-client-id
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URL=http://localhost:8080/oauth/callback
+GOOGLE_REFRESH_TOKEN=your-refresh-token
+```
+
+3. Update `mcp-inspector-config.json` with your project path:
+```json
+{
+  "mcpServers": {
+    "google-calendar-mcp": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
+        "GOOGLE_REDIRECT_URL": "${GOOGLE_REDIRECT_URL}",
+        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+4. Run the MCP Inspector:
+```bash
+npx @modelcontextprotocol/inspector --config mcp-inspector-config.json
+```
+
+1. Open your browser to the URL shown in the terminal (default should be http://localhost:6277) to interact with the MCP server through the Inspector UI.
+
+
+## Security
+
+- **Never** share your `client_secret` or `refresh_token`
+- Add `.env` to your `.gitignore` (already included)
+- Tokens have limited permissions only for Google Calendar
+
+## Additional Resources
+
+- [Google Calendar API Documentation](https://developers.google.com/calendar/api)
+- [OAuth 2.0 for Web Server Applications](https://developers.google.com/identity/protocols/oauth2/web-server)
+- [Google Cloud Console](https://console.cloud.google.com/)
+- [Model Context Protocol Documentation](https://modelcontextprotocol.io)
+
+## Available Tools
+
+### google-create-event
+
+Creates a new calendar event in Google Calendar.
+
+Parameters:
+- `title`: String - Event title/summary
+- `start`: DateTime string - Event start time (ISO 8601 format)
+- `end`: DateTime string - Event end time (ISO 8601 format)
+- `description`: String (optional) - Event description
+- `location`: String (optional) - Event location
+- `calendarId`: String (optional) - Calendar ID (defaults to 'primary')
+
+Returns:
+- The unique ID and details of the created event
+
+### google-update-event
+
+Updates an existing event in Google Calendar.
+
+Parameters:
+- `eventId`: String - The unique ID of the event to update
+- `title`: String (optional) - New event title/summary
+- `start`: DateTime string (optional) - New event start time (ISO 8601 format)
+- `end`: DateTime string (optional) - New event end time (ISO 8601 format)
+- `description`: String (optional) - New event description
+- `location`: String (optional) - New event location
+- `calendarId`: String (optional) - Calendar ID (defaults to 'primary')
+
+Returns:
+- The updated event details
+
+### google-list-events
+
+Lists events within a specified timeframe from Google Calendar.
+
+Parameters:
+- `timeMin`: DateTime string (optional) - Start of the timeframe (ISO 8601 format)
+- `timeMax`: DateTime string (optional) - End of the timeframe (ISO 8601 format)
+- `calendarId`: String (optional) - Calendar ID (defaults to 'primary')
+- `maxResults`: Number (optional) - Maximum number of events to return (default: 10)
+
+Returns:
+- A list of events that fall within the given timeframe
+
+### google-search-events
+
+Searches for events in Google Calendar by text query.
+
+Parameters:
+- `query`: String - Search query
+- `calendarId`: String (optional) - Calendar ID (defaults to 'primary')
+- `maxResults`: Number (optional) - Maximum number of events to return (default: 10)
+
+Returns:
+- A list of events matching the search query
+
+### google-delete-event
+
+Deletes an event from Google Calendar.
+
+Parameters:
+- `eventId`: String - The unique ID of the event to delete
+- `calendarId`: String (optional) - Calendar ID (defaults to 'primary')
+
+Returns:
+- Confirmation of deletion
+
+### google-list-calendars
+
+Lists all calendars available to the user.
+
+Returns:
+- A list of calendars with their IDs and names
+
+### google-get-current-datetime
+
+Gets the current date and time in ISO 8601 format. Useful for references when creating or searching for events.
+
+Parameters:
+- `timezone`: String (optional) - Timezone in IANA format (e.g., America/New_York, Europe/Madrid). Defaults to 'Atlantic/Canary'.
+
+Returns:
+- Current date and time information including ISO 8601 format, timestamp, local time, and timezone details
+
+## License
+
+MIT
