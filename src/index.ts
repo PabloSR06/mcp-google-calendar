@@ -24,7 +24,6 @@ async function main() {
   const googleClient = new GoogleCalendarClient({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUrl: process.env.GOOGLE_REDIRECT_URL || 'http://localhost:8080/oauth/callback',
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
   })
 

@@ -96,7 +96,6 @@ If you need **each user to authenticate with their own Google account**, this se
 # Google Cloud Console credentials
 GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your_client_secret_here
-GOOGLE_REDIRECT_URL=http://localhost:8080/oauth/callback
 
 # This will be generated in the next step
 GOOGLE_REFRESH_TOKEN=
@@ -138,7 +137,6 @@ Add this to your MCP client configuration (e.g., Claude Desktop config):
       "env": {
         "GOOGLE_CLIENT_ID": "<your-client-id>",
         "GOOGLE_CLIENT_SECRET": "<your-client-secret>",
-        "GOOGLE_REDIRECT_URL": "http://localhost:8080/oauth/callback",
         "GOOGLE_REFRESH_TOKEN": "<your-refresh-token>"
       }
     }
@@ -171,7 +169,6 @@ npm run build
 ```bash
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URL=http://localhost:8080/oauth/callback
 GOOGLE_REFRESH_TOKEN=your-refresh-token
 ```
 
@@ -185,7 +182,6 @@ GOOGLE_REFRESH_TOKEN=your-refresh-token
       "env": {
         "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
         "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
-        "GOOGLE_REDIRECT_URL": "${GOOGLE_REDIRECT_URL}",
         "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
       }
     }

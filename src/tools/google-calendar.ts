@@ -5,7 +5,7 @@ import type { OAuth2Client } from 'googleapis-common';
 interface GoogleCalendarConfig {
   clientId: string;
   clientSecret: string;
-  redirectUrl: string;
+  redirectUrl?: string;
   refreshToken?: string;
 }
 
@@ -17,7 +17,7 @@ export class GoogleCalendarClient {
     this.auth = new google.auth.OAuth2(
       config.clientId,
       config.clientSecret,
-      config.redirectUrl
+      'http://localhost:8080/oauth/callback'
     ) as OAuth2Client;
 
     if (config.refreshToken) {
