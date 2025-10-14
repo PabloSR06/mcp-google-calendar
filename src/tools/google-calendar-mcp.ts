@@ -1,12 +1,12 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { GoogleCalendarClient } from './google-calendar.js';
-import { registerGoogleListCalendars } from './google-list-calendars.js';
-import { registerGoogleListEvents } from './google-list-events.js';
-import { registerGoogleCreateEvent } from './google-create-event.js';
-import { registerGoogleUpdateEvent } from './google-update-event.js';
-import { registerGoogleDeleteEvent } from './google-delete-event.js';
-import { registerGoogleSearchEvents } from './google-search-events.js';
-import { registerGoogleGetCurrentDatetime } from './google-get-current-datetime.js';
+import { registerGoogleListCalendars } from './calendar-list-calendars.js';
+import { registerGoogleListEvents } from './calendar-list-events.js';
+import { registerGoogleCreateEvent } from './calendar-create-event.js';
+import { registerGoogleUpdateEvent } from './calendar-update-event.js';
+import { registerGoogleDeleteEvent } from './calendar-delete-event.js';
+import { registerGoogleSearchEvents } from './calendar-search-events.js';
+import { registerGoogleGetCurrentDatetime } from './calendar-get-current-datetime.js';
 
 export function registerGoogleCalendarTools(
   googleClient: GoogleCalendarClient,

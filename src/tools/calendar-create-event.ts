@@ -7,7 +7,7 @@ export function registerGoogleCreateEvent(
   server: McpServer
 ) {
   server.tool(
-    'google_create_event',
+    'calendar_create_event',
     'Crea un nuevo evento en Google Calendar',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),

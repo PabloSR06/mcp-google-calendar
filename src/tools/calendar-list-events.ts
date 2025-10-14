@@ -7,7 +7,7 @@ export function registerGoogleListEvents(
   server: McpServer
 ) {
   server.tool(
-    'google_list_events',
+    'calendar_list_events',
     'Lista eventos de un calendario de Google Calendar',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),

@@ -6,7 +6,7 @@ export function registerGoogleListCalendars(
   server: McpServer
 ) {
   server.tool(
-    'google_list_calendars',
+    'calendar_list_calendars',
     'Lista todos los calendarios disponibles en Google Calendar',
     async () => {
       try {

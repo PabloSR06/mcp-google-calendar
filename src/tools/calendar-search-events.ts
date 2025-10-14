@@ -7,7 +7,7 @@ export function registerGoogleSearchEvents(
   server: McpServer
 ) {
   server.tool(
-    'google_search_events',
+    'calendar_search_events',
     'Busca eventos en Google Calendar por texto',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),

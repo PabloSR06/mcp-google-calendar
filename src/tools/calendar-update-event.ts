@@ -8,7 +8,7 @@ export function registerGoogleUpdateEvent(
   server: McpServer
 ) {
   server.tool(
-    'google_update_event',
+    'calendar_update_event',
     'Actualiza un evento existente en Google Calendar',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),

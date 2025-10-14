@@ -25,13 +25,13 @@ A Google Calendar (MCP) server to expose calendar operations as tools for LLM.
   - [Security](#security)
   - [Additional Resources](#additional-resources)
   - [Available Tools](#available-tools)
-    - [google-create-event](#google-create-event)
-    - [google-update-event](#google-update-event)
-    - [google-list-events](#google-list-events)
-    - [google-search-events](#google-search-events)
-    - [google-delete-event](#google-delete-event)
-    - [google-list-calendars](#google-list-calendars)
-    - [google-get-current-datetime](#google-get-current-datetime)
+    - [calendar-create-event](#calendar-create-event)
+    - [calendar-update-event](#calendar-update-event)
+    - [calendar-list-events](#calendar-list-events)
+    - [calendar-search-events](#calendar-search-events)
+    - [calendar-delete-event](#calendar-delete-event)
+    - [calendar-list-calendars](#calendar-list-calendars)
+    - [calendar-get-current-datetime](#calendar-get-current-datetime)
   - [License](#license)
 
 
@@ -212,7 +212,7 @@ npx @modelcontextprotocol/inspector --config mcp-inspector-config.json
 
 ## Available Tools
 
-### google-create-event
+### calendar-create-event
 
 Creates a new calendar event in Google Calendar.
 
@@ -227,7 +227,7 @@ Parameters:
 Returns:
 - The unique ID and details of the created event
 
-### google-update-event
+### calendar-update-event
 
 Updates an existing event in Google Calendar.
 
@@ -243,7 +243,7 @@ Parameters:
 Returns:
 - The updated event details
 
-### google-list-events
+### calendar-list-events
 
 Lists events within a specified timeframe from Google Calendar.
 
@@ -256,7 +256,7 @@ Parameters:
 Returns:
 - A list of events that fall within the given timeframe
 
-### google-search-events
+### calendar-search-events
 
 Searches for events in Google Calendar by text query.
 
@@ -268,7 +268,7 @@ Parameters:
 Returns:
 - A list of events matching the search query
 
-### google-delete-event
+### calendar-delete-event
 
 Deletes an event from Google Calendar.
 
@@ -279,14 +279,14 @@ Parameters:
 Returns:
 - Confirmation of deletion
 
-### google-list-calendars
+### calendar-list-calendars
 
 Lists all calendars available to the user.
 
 Returns:
 - A list of calendars with their IDs and names
 
-### google-get-current-datetime
+### calendar-get-current-datetime
 
 Gets the current date and time in ISO 8601 format. Useful for references when creating or searching for events.
 

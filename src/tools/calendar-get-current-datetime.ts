@@ -7,7 +7,7 @@ export function registerGoogleGetCurrentDatetime(
   server: McpServer
 ) {
   server.tool(
-    'google_get_current_datetime',
+    'calendar_get_current_datetime',
     'Obtiene la fecha y hora actual en formato ISO 8601. Útil para referencias temporales al crear o buscar eventos.',
     {
       timezone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Europe/Madrid). Por defecto usa Atlantic/Canary.'),
