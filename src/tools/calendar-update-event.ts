@@ -19,6 +19,7 @@ export function registerGoogleUpdateEvent(
       description: z.string().optional().describe('Nueva descripción del evento'),
       location: z.string().optional().describe('Nueva ubicación del evento'),
       attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
+      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env'),
     },
     async (args) => {
       try {
@@ -31,6 +32,7 @@ export function registerGoogleUpdateEvent(
           description,
           location,
           attendees,
+          timeZone,
         } = args;
 
         if (!eventId) {
@@ -60,17 +62,19 @@ export function registerGoogleUpdateEvent(
           event.location = location;
         }
         
+        const defaultTimeZone = timeZone || process.env.DEFAULT_TIMEZONE || 'Atlantic/Canary';
+        
         if (start !== undefined) {
           event.start = {
             dateTime: start,
-            timeZone: process.env.DEFAULT_TIMEZONE || 'America/New_York',
+            timeZone: defaultTimeZone,
           };
         }
         
         if (end !== undefined) {
           event.end = {
             dateTime: end,
-            timeZone: process.env.DEFAULT_TIMEZONE || 'America/New_York',
+            timeZone: defaultTimeZone,
           };
         }
 

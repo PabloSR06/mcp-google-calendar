@@ -17,6 +17,7 @@ export function registerGoogleCreateEvent(
       description: z.string().optional().describe('Descripción del evento (opcional)'),
       location: z.string().optional().describe('Ubicación del evento (opcional)'),
       attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
+      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env'),
     },
     async (args) => {
       try {
@@ -28,6 +29,7 @@ export function registerGoogleCreateEvent(
           description,
           location,
           attendees,
+          timeZone,
         } = args;
 
         if (!title || !start || !end) {
@@ -42,7 +44,7 @@ export function registerGoogleCreateEvent(
           };
         }
 
-        const event = createSimpleEvent(title, start, end, description, location, attendees);
+        const event = createSimpleEvent(title, start, end, description, location, attendees, timeZone);
         const createdEvent = await googleClient.createEvent(calendarId, event);
 
         let successMessage = `Evento creado exitosamente:\nID: ${createdEvent.id}\nTítulo: ${createdEvent.summary}\nInicio: ${createdEvent.start?.dateTime}\nFin: ${createdEvent.end?.dateTime}`;

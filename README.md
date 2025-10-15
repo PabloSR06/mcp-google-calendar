@@ -22,6 +22,7 @@ A Google Calendar (MCP) server to expose calendar operations as tools for LLM.
     - [MCP Client Configuration](#mcp-client-configuration)
   - [Usage](#usage)
   - [Testing with MCP Inspector](#testing-with-mcp-inspector)
+  - [Timezone Configuration](#timezone-configuration)
   - [Security](#security)
   - [Additional Resources](#additional-resources)
   - [Available Tools](#available-tools)
@@ -99,6 +100,9 @@ GOOGLE_CLIENT_SECRET=your_client_secret_here
 
 # This will be generated in the next step
 GOOGLE_REFRESH_TOKEN=
+
+# Default timezone for calendar operations
+DEFAULT_TIMEZONE=Atlantic/Canary
 ```
 
 #### 4. Get the refresh token
@@ -137,7 +141,8 @@ Add this to your MCP client configuration (e.g., Claude Desktop config):
       "env": {
         "GOOGLE_CLIENT_ID": "<your-client-id>",
         "GOOGLE_CLIENT_SECRET": "<your-client-secret>",
-        "GOOGLE_REFRESH_TOKEN": "<your-refresh-token>"
+        "GOOGLE_REFRESH_TOKEN": "<your-refresh-token>",
+        "DEFAULT_TIMEZONE": "Atlantic/Canary"
       }
     }
   }
@@ -170,6 +175,7 @@ npm run build
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_REFRESH_TOKEN=your-refresh-token
+DEFAULT_TIMEZONE=Atlantic/Canary
 ```
 
 3. Update `mcp-inspector-config.json` with your project path:
@@ -182,7 +188,8 @@ GOOGLE_REFRESH_TOKEN=your-refresh-token
       "env": {
         "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
         "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
-        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
+        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}",
+        "DEFAULT_TIMEZONE": "${DEFAULT_TIMEZONE}"
       }
     }
   }
@@ -196,6 +203,25 @@ npx @modelcontextprotocol/inspector --config mcp-inspector-config.json
 
 1. Open your browser to the URL shown in the terminal (default should be http://localhost:6277) to interact with the MCP server through the Inspector UI.
 
+
+## Timezone Configuration
+
+This MCP server supports flexible timezone configuration:
+
+1. **Default Timezone**: Set `DEFAULT_TIMEZONE` in your `.env` file using IANA timezone format (e.g., `Atlantic/Canary`, `America/New_York`, `Asia/Tokyo`)
+2. **Per-Operation Override**: When creating or updating events, you can specify a different timezone for that specific operation
+3. **Fallback**: If no timezone is configured, the server defaults to `Atlantic/Canary`
+
+**Timezone Priority:**
+1. Timezone parameter passed to the tool (highest priority)
+2. `DEFAULT_TIMEZONE` environment variable from `.env`
+3. Hardcoded default: `Atlantic/Canary` (lowest priority)
+
+**Common IANA Timezones:**
+- Europe: `Atlantic/Canary`, `Europe/London`, `Europe/Paris`, `Europe/Berlin`
+- Americas: `America/New_York`, `America/Chicago`, `America/Los_Angeles`, `America/Mexico_City`
+- Asia: `Asia/Tokyo`, `Asia/Shanghai`, `Asia/Dubai`, `Asia/Kolkata`
+- Other: `Atlantic/Canary`, `Pacific/Auckland`, `Australia/Sydney`
 
 ## Security
 
@@ -222,6 +248,8 @@ Parameters:
 - `end`: DateTime string - Event end time (ISO 8601 format)
 - `description`: String (optional) - Event description
 - `location`: String (optional) - Event location
+- `attendees`: Array of email strings (optional) - List of attendee email addresses
+- `timeZone`: String (optional) - Timezone in IANA format (e.g., Atlantic/Canary, America/New_York). Defaults to `DEFAULT_TIMEZONE` from .env or 'Atlantic/Canary'
 - `calendarId`: String (optional) - Calendar ID (defaults to 'primary')
 
 Returns:
@@ -238,6 +266,8 @@ Parameters:
 - `end`: DateTime string (optional) - New event end time (ISO 8601 format)
 - `description`: String (optional) - New event description
 - `location`: String (optional) - New event location
+- `attendees`: Array of email strings (optional) - List of attendee email addresses
+- `timeZone`: String (optional) - Timezone in IANA format (e.g., Atlantic/Canary, America/New_York). Defaults to `DEFAULT_TIMEZONE` from .env or 'Atlantic/Canary'
 - `calendarId`: String (optional) - Calendar ID (defaults to 'primary')
 
 Returns:
@@ -291,7 +321,7 @@ Returns:
 Gets the current date and time in ISO 8601 format. Useful for references when creating or searching for events.
 
 Parameters:
-- `timezone`: String (optional) - Timezone in IANA format (e.g., America/New_York, Europe/Madrid). Defaults to 'Atlantic/Canary'.
+- `timezone`: String (optional) - Timezone in IANA format (e.g., Atlantic/Canary, America/New_York, Asia/Tokyo). Defaults to `DEFAULT_TIMEZONE` from .env or 'Atlantic/Canary'.
 
 Returns:
 - Current date and time information including ISO 8601 format, timestamp, local time, and timezone details

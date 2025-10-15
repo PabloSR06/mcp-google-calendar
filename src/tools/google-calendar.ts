@@ -187,19 +187,22 @@ export function createSimpleEvent(
   end: string,
   description?: string,
   location?: string,
-  attendees?: string[]
+  attendees?: string[],
+  timeZone?: string
 ): calendar_v3.Schema$Event {
+  const defaultTimeZone = timeZone || process.env.DEFAULT_TIMEZONE || 'Atlantic/Canary';
+  
   const event: calendar_v3.Schema$Event = {
     summary: title,
     description,
     location,
     start: {
       dateTime: start,
-      timeZone: 'America/Mexico_City', // Ajusta según tu zona horaria
+      timeZone: defaultTimeZone,
     },
     end: {
       dateTime: end,
-      timeZone: 'America/Mexico_City',
+      timeZone: defaultTimeZone,
     },
   };
 
