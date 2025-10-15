@@ -16,6 +16,7 @@ export function registerGoogleCreateEvent(
       end: z.string().describe('Fecha/hora de fin en formato ISO'),
       description: z.string().optional().describe('Descripción del evento (opcional)'),
       location: z.string().optional().describe('Ubicación del evento (opcional)'),
+      attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
     },
     async (args) => {
       try {
@@ -26,6 +27,7 @@ export function registerGoogleCreateEvent(
           end,
           description,
           location,
+          attendees,
         } = args;
 
         if (!title || !start || !end) {
@@ -40,14 +42,20 @@ export function registerGoogleCreateEvent(
           };
         }
 
-        const event = createSimpleEvent(title, start, end, description, location);
+        const event = createSimpleEvent(title, start, end, description, location, attendees);
         const createdEvent = await googleClient.createEvent(calendarId, event);
+
+        let successMessage = `Evento creado exitosamente:\nID: ${createdEvent.id}\nTítulo: ${createdEvent.summary}\nInicio: ${createdEvent.start?.dateTime}\nFin: ${createdEvent.end?.dateTime}`;
+        
+        if (attendees && attendees.length > 0) {
+          successMessage += `\nInvitados: ${attendees.join(', ')}`;
+        }
 
         return {
           content: [
             {
               type: 'text',
-              text: `Evento creado exitosamente:\nID: ${createdEvent.id}\nTítulo: ${createdEvent.summary}\nInicio: ${createdEvent.start?.dateTime}\nFin: ${createdEvent.end?.dateTime}`,
+              text: successMessage,
             },
           ],
         };

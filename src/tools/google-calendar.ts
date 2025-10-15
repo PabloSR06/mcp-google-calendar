@@ -186,9 +186,10 @@ export function createSimpleEvent(
   start: string,
   end: string,
   description?: string,
-  location?: string
+  location?: string,
+  attendees?: string[]
 ): calendar_v3.Schema$Event {
-  return {
+  const event: calendar_v3.Schema$Event = {
     summary: title,
     description,
     location,
@@ -201,4 +202,13 @@ export function createSimpleEvent(
       timeZone: 'America/Mexico_City',
     },
   };
+
+  if (attendees && attendees.length > 0) {
+    event.attendees = attendees.map(email => ({
+      email: email.trim(),
+      responseStatus: 'needsAction'
+    }));
+  }
+
+  return event;
 }

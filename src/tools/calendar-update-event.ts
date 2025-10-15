@@ -18,6 +18,7 @@ export function registerGoogleUpdateEvent(
       end: z.string().optional().describe('Nueva fecha/hora de fin en formato ISO'),
       description: z.string().optional().describe('Nueva descripción del evento'),
       location: z.string().optional().describe('Nueva ubicación del evento'),
+      attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
     },
     async (args) => {
       try {
@@ -29,6 +30,7 @@ export function registerGoogleUpdateEvent(
           end,
           description,
           location,
+          attendees,
         } = args;
 
         if (!eventId) {
@@ -61,24 +63,37 @@ export function registerGoogleUpdateEvent(
         if (start !== undefined) {
           event.start = {
             dateTime: start,
-            timeZone: 'America/Mexico_City',
+            timeZone: process.env.DEFAULT_TIMEZONE || 'America/New_York',
           };
         }
         
         if (end !== undefined) {
           event.end = {
             dateTime: end,
-            timeZone: 'America/Mexico_City',
+            timeZone: process.env.DEFAULT_TIMEZONE || 'America/New_York',
           };
         }
 
+        if (attendees !== undefined) {
+          event.attendees = attendees.map(email => ({
+            email: email.trim(),
+            responseStatus: 'needsAction'
+          }));
+        }
+
         const updatedEvent = await googleClient.updateEvent(calendarId, eventId, event);
+
+        let successMessage = `Evento actualizado exitosamente:\nID: ${updatedEvent.id}\nTítulo: ${updatedEvent.summary}\nInicio: ${updatedEvent.start?.dateTime}\nFin: ${updatedEvent.end?.dateTime}`;
+        
+        if (attendees !== undefined && attendees.length > 0) {
+          successMessage += `\nInvitados: ${attendees.join(', ')}`;
+        }
 
         return {
           content: [
             {
               type: 'text',
-              text: `Evento actualizado exitosamente:\nID: ${updatedEvent.id}\nTítulo: ${updatedEvent.summary}\nInicio: ${updatedEvent.start?.dateTime}\nFin: ${updatedEvent.end?.dateTime}`,
+              text: successMessage,
             },
           ],
         };
