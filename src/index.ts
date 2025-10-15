@@ -9,7 +9,7 @@ import { registerGoogleCalendarTools } from "./tools/google-calendar-mcp.js"
 
 const server = new McpServer({
   name: "mcp-google-calendar",
-  version: "1.0.2",
+  version: "1.1.0",
 })
 
 async function main() {
