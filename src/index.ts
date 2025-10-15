@@ -4,12 +4,12 @@ import "dotenv/config"
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 
-import { GoogleCalendarClient } from "./tools/google-calendar.js"
+import { GoogleCalendarClient } from "./tools/google-calendar-client.js"
 import { registerGoogleCalendarTools } from "./tools/google-calendar-mcp.js"
 
 const server = new McpServer({
   name: "mcp-google-calendar",
-  version: "1.0.1",
+  version: "1.1.0",
 })
 
 async function main() {
@@ -24,7 +24,6 @@ async function main() {
   const googleClient = new GoogleCalendarClient({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUrl: process.env.GOOGLE_REDIRECT_URL || 'http://localhost:8080/oauth/callback',
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
   })
 

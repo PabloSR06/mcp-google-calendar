@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { GoogleCalendarClient } from './google-calendar.js';
+import { GoogleCalendarClient } from '../google-calendar-client.js';
 import { z } from 'zod';
 
 export function registerGoogleDeleteEvent(
@@ -7,7 +7,7 @@ export function registerGoogleDeleteEvent(
   server: McpServer
 ) {
   server.tool(
-    'google_delete_event',
+    'calendar_delete_event',
     'Elimina un evento de Google Calendar',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),

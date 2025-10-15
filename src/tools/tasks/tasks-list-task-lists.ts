@@ -1,24 +1,25 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { GoogleCalendarClient } from './google-calendar.js';
+import { GoogleCalendarClient } from '../google-calendar-client.js';
+import { z } from 'zod';
 
-export function registerGoogleListCalendars(
+export function registerTasksListTaskLists(
   googleClient: GoogleCalendarClient,
   server: McpServer
 ) {
   server.tool(
-    'google_list_calendars',
-    'Lista todos los calendarios disponibles en Google Calendar',
+    'tasks_list_task_lists',
+    'Lista todas las listas de tareas de Google Tasks del usuario',
+    {},
     async () => {
       try {
-        const calendars = await googleClient.listCalendars();
-        const data = calendars.map((cal) => ({
-          id: cal.id,
-          summary: cal.summary,
-          description: cal.description,
-          timeZone: cal.timeZone,
-          accessRole: cal.accessRole,
+        const taskLists = await googleClient.listTaskLists();
+
+        const data = taskLists.map((taskList) => ({
+          id: taskList.id,
+          title: taskList.title,
+          updated: taskList.updated,
         }));
-        
+
         return {
           content: [
             {
@@ -33,7 +34,7 @@ export function registerGoogleListCalendars(
           content: [
             {
               type: 'text',
-              text: `Error al listar calendarios: ${errorMessage}`,
+              text: `Error al listar listas de tareas: ${errorMessage}`,
             },
           ],
           isError: true,

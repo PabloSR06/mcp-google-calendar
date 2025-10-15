@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { GoogleCalendarClient } from './google-calendar.js';
+import { GoogleCalendarClient } from '../google-calendar-client.js';
 import { z } from 'zod';
 
 export function registerGoogleGetCurrentDatetime(
@@ -7,14 +7,14 @@ export function registerGoogleGetCurrentDatetime(
   server: McpServer
 ) {
   server.tool(
-    'google_get_current_datetime',
+    'calendar_get_current_datetime',
     'Obtiene la fecha y hora actual en formato ISO 8601. Útil para referencias temporales al crear o buscar eventos.',
     {
-      timezone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Europe/Madrid). Por defecto usa Atlantic/Canary.'),
+      timezone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env'),
     },
     async (args) => {
       try {
-        const { timezone = 'Atlantic/Canary' } = args;
+        const { timezone = process.env.DEFAULT_TIMEZONE || 'Atlantic/Canary' } = args;
 
         const now = new Date();
         
@@ -54,7 +54,7 @@ export function registerGoogleGetCurrentDatetime(
             content: [
               {
                 type: 'text',
-                text: `Error: Zona horaria inválida '${timezone}'. Usa formato IANA (ej: America/New_York, Europe/Madrid, Atlantic/Canary)`,
+                text: `Error: Zona horaria inválida '${timezone}'. Usa formato IANA (ej: America/New_York, Atlantic/Canary, Atlantic/Canary)`,
               },
             ],
             isError: true,

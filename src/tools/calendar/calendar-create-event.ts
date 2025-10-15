@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { GoogleCalendarClient, createSimpleEvent } from './google-calendar.js';
+import { GoogleCalendarClient, createSimpleEvent } from '../google-calendar-client.js';
 import { z } from 'zod';
 
 export function registerGoogleCreateEvent(
@@ -7,7 +7,7 @@ export function registerGoogleCreateEvent(
   server: McpServer
 ) {
   server.tool(
-    'google_create_event',
+    'calendar_create_event',
     'Crea un nuevo evento en Google Calendar',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),
@@ -16,6 +16,8 @@ export function registerGoogleCreateEvent(
       end: z.string().describe('Fecha/hora de fin en formato ISO'),
       description: z.string().optional().describe('Descripción del evento (opcional)'),
       location: z.string().optional().describe('Ubicación del evento (opcional)'),
+      attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
+      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env'),
     },
     async (args) => {
       try {
@@ -26,6 +28,8 @@ export function registerGoogleCreateEvent(
           end,
           description,
           location,
+          attendees,
+          timeZone,
         } = args;
 
         if (!title || !start || !end) {
@@ -40,14 +44,20 @@ export function registerGoogleCreateEvent(
           };
         }
 
-        const event = createSimpleEvent(title, start, end, description, location);
+        const event = createSimpleEvent(title, start, end, description, location, attendees, timeZone);
         const createdEvent = await googleClient.createEvent(calendarId, event);
+
+        let successMessage = `Evento creado exitosamente:\nID: ${createdEvent.id}\nTítulo: ${createdEvent.summary}\nInicio: ${createdEvent.start?.dateTime}\nFin: ${createdEvent.end?.dateTime}`;
+        
+        if (attendees && attendees.length > 0) {
+          successMessage += `\nInvitados: ${attendees.join(', ')}`;
+        }
 
         return {
           content: [
             {
               type: 'text',
-              text: `Evento creado exitosamente:\nID: ${createdEvent.id}\nTítulo: ${createdEvent.summary}\nInicio: ${createdEvent.start?.dateTime}\nFin: ${createdEvent.end?.dateTime}`,
+              text: successMessage,
             },
           ],
         };

@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { GoogleCalendarClient } from './google-calendar.js';
+import { GoogleCalendarClient } from '../google-calendar-client.js';
 import { z } from 'zod';
 import { calendar_v3 } from 'googleapis';
 
@@ -8,7 +8,7 @@ export function registerGoogleUpdateEvent(
   server: McpServer
 ) {
   server.tool(
-    'google_update_event',
+    'calendar_update_event',
     'Actualiza un evento existente en Google Calendar',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),
@@ -18,6 +18,8 @@ export function registerGoogleUpdateEvent(
       end: z.string().optional().describe('Nueva fecha/hora de fin en formato ISO'),
       description: z.string().optional().describe('Nueva descripción del evento'),
       location: z.string().optional().describe('Nueva ubicación del evento'),
+      attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
+      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env'),
     },
     async (args) => {
       try {
@@ -29,6 +31,8 @@ export function registerGoogleUpdateEvent(
           end,
           description,
           location,
+          attendees,
+          timeZone,
         } = args;
 
         if (!eventId) {
@@ -58,27 +62,42 @@ export function registerGoogleUpdateEvent(
           event.location = location;
         }
         
+        const defaultTimeZone = timeZone || process.env.DEFAULT_TIMEZONE || 'Atlantic/Canary';
+        
         if (start !== undefined) {
           event.start = {
             dateTime: start,
-            timeZone: 'America/Mexico_City',
+            timeZone: defaultTimeZone,
           };
         }
         
         if (end !== undefined) {
           event.end = {
             dateTime: end,
-            timeZone: 'America/Mexico_City',
+            timeZone: defaultTimeZone,
           };
         }
 
+        if (attendees !== undefined) {
+          event.attendees = attendees.map(email => ({
+            email: email.trim(),
+            responseStatus: 'needsAction'
+          }));
+        }
+
         const updatedEvent = await googleClient.updateEvent(calendarId, eventId, event);
+
+        let successMessage = `Evento actualizado exitosamente:\nID: ${updatedEvent.id}\nTítulo: ${updatedEvent.summary}\nInicio: ${updatedEvent.start?.dateTime}\nFin: ${updatedEvent.end?.dateTime}`;
+        
+        if (attendees !== undefined && attendees.length > 0) {
+          successMessage += `\nInvitados: ${attendees.join(', ')}`;
+        }
 
         return {
           content: [
             {
               type: 'text',
-              text: `Evento actualizado exitosamente:\nID: ${updatedEvent.id}\nTítulo: ${updatedEvent.summary}\nInicio: ${updatedEvent.start?.dateTime}\nFin: ${updatedEvent.end?.dateTime}`,
+              text: successMessage,
             },
           ],
         };

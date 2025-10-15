@@ -16,7 +16,7 @@ const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECR
 
 const authUrl = oauth2Client.generateAuthUrl({
   access_type: 'offline',
-  scope: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events'],
+  scope: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events','https://www.googleapis.com/auth/tasks'],
   prompt: 'consent',
 });
 
