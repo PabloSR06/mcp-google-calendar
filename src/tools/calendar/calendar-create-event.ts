@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { GoogleCalendarClient, createSimpleEvent } from './google-calendar.js';
+import { GoogleCalendarClient, createSimpleEvent } from '../google-calendar-client.js';
 import { z } from 'zod';
 
 export function registerGoogleCreateEvent(

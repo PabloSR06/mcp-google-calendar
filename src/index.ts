@@ -4,7 +4,7 @@ import "dotenv/config"
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 
-import { GoogleCalendarClient } from "./tools/google-calendar.js"
+import { GoogleCalendarClient } from "./tools/google-calendar-client.js"
 import { registerGoogleCalendarTools } from "./tools/google-calendar-mcp.js"
 
 const server = new McpServer({

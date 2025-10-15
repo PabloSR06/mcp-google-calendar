@@ -1,35 +1,40 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { GoogleCalendarClient } from './google-calendar.js';
+import { GoogleCalendarClient } from '../google-calendar-client.js';
 import { z } from 'zod';
 
-export function registerGoogleListEvents(
+export function registerGoogleSearchEvents(
   googleClient: GoogleCalendarClient,
   server: McpServer
 ) {
   server.tool(
-    'calendar_list_events',
-    'Lista eventos de un calendario de Google Calendar',
+    'calendar_search_events',
+    'Busca eventos en Google Calendar por texto',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),
-      timeMin: z.string().optional().describe('Fecha/hora mínima en formato ISO (ej: 2023-12-01T00:00:00Z)'),
-      timeMax: z.string().optional().describe('Fecha/hora máxima en formato ISO'),
+      query: z.string().describe('Texto a buscar en los eventos'),
       maxResults: z.number().optional().describe('Número máximo de resultados (por defecto: 10)'),
     },
     async (args) => {
       try {
         const {
           calendarId = 'primary',
-          timeMin,
-          timeMax,
+          query,
           maxResults = 10,
         } = args;
 
-        const events = await googleClient.listEvents(
-          calendarId,
-          timeMin,
-          timeMax,
-          maxResults
-        );
+        if (!query) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: 'Error: query es requerido',
+              },
+            ],
+            isError: true,
+          };
+        }
+
+        const events = await googleClient.searchEvents(calendarId, query, maxResults);
 
         const data = events.map((event) => ({
           id: event.id,
@@ -38,7 +43,6 @@ export function registerGoogleListEvents(
           location: event.location,
           start: event.start,
           end: event.end,
-          status: event.status,
         }));
 
         return {
@@ -55,7 +59,7 @@ export function registerGoogleListEvents(
           content: [
             {
               type: 'text',
-              text: `Error al listar eventos: ${errorMessage}`,
+              text: `Error al buscar eventos: ${errorMessage}`,
             },
           ],
           isError: true,
