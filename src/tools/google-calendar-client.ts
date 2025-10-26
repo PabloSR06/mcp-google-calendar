@@ -128,7 +128,7 @@ export class GoogleCalendarClient {
     event: calendar_v3.Schema$Event
   ): Promise<calendar_v3.Schema$Event> {
     try {
-      const response = await this.calendar.events.update({
+      const response = await this.calendar.events.patch({
         calendarId,
         eventId,
         requestBody: event,
