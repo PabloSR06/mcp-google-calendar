@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { GoogleCalendarClient } from '../google-calendar-client.js';
 import { z } from 'zod';
+import { validateAndNormalizeDate } from '../utils/date-validation.js';
 
 export function registerGoogleListEvents(
   googleClient: GoogleCalendarClient,
@@ -11,8 +12,8 @@ export function registerGoogleListEvents(
     'Lista eventos de un calendario de Google Calendar',
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),
-      timeMin: z.string().optional().describe('Fecha/hora mínima en formato ISO (ej: 2023-12-01T00:00:00Z)'),
-      timeMax: z.string().optional().describe('Fecha/hora máxima en formato ISO'),
+      timeMin: z.string().optional().describe('Fecha/hora mínima en formato ISO 8601 Zulu time (ej: 2023-12-01T00:00:00Z).'),
+      timeMax: z.string().optional().describe('Fecha/hora máxima en formato ISO 8601 Zulu time (ej: 2023-12-31T23:59:59Z).'),
       maxResults: z.number().optional().describe('Número máximo de resultados (por defecto: 10)'),
     },
     async (args) => {
@@ -24,10 +25,13 @@ export function registerGoogleListEvents(
           maxResults = 10,
         } = args;
 
+        const normalizedTimeMin = timeMin ? validateAndNormalizeDate(timeMin) : undefined;
+        const normalizedTimeMax = timeMax ? validateAndNormalizeDate(timeMax) : undefined;
+
         const events = await googleClient.listEvents(
           calendarId,
-          timeMin,
-          timeMax,
+          normalizedTimeMin,
+          normalizedTimeMax,
           maxResults
         );
 

@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { GoogleCalendarClient } from '../google-calendar-client.js';
 import { z } from 'zod';
 import { calendar_v3 } from 'googleapis';
+import { validateAndNormalizeDate } from '../utils/date-validation.js';
 
 export function registerGoogleUpdateEvent(
   googleClient: GoogleCalendarClient,
@@ -14,12 +15,12 @@ export function registerGoogleUpdateEvent(
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),
       eventId: z.string().describe('ID del evento a actualizar'),
       title: z.string().optional().describe('Nuevo título del evento'),
-      start: z.string().optional().describe('Nueva fecha/hora de inicio en formato ISO (ej: 2023-12-01T10:00:00Z)'),
-      end: z.string().optional().describe('Nueva fecha/hora de fin en formato ISO'),
+      start: z.string().optional().describe('Nueva fecha/hora de inicio en formato ISO 8601 Zulu time (ej: 2023-12-01T10:00:00Z).'),
+      end: z.string().optional().describe('Nueva fecha/hora de fin en formato ISO 8601 Zulu time (ej: 2023-12-01T11:00:00Z).'),
       description: z.string().optional().describe('Nueva descripción del evento'),
       location: z.string().optional().describe('Nueva ubicación del evento'),
       attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
-      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env'),
+      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env. Esta zona se usa para interpretar la hora Zulu en el calendario'),
     },
     async (args) => {
       try {
@@ -65,15 +66,17 @@ export function registerGoogleUpdateEvent(
         const defaultTimeZone = timeZone || process.env.DEFAULT_TIMEZONE || 'Atlantic/Canary';
         
         if (start !== undefined) {
+          const normalizedStart = validateAndNormalizeDate(start);
           event.start = {
-            dateTime: start,
+            dateTime: normalizedStart,
             timeZone: defaultTimeZone,
           };
         }
         
         if (end !== undefined) {
+          const normalizedEnd = validateAndNormalizeDate(end);
           event.end = {
-            dateTime: end,
+            dateTime: normalizedEnd,
             timeZone: defaultTimeZone,
           };
         }

@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import { calendar_v3, tasks_v1 } from 'googleapis';
 import type { OAuth2Client } from 'googleapis-common';
+import { validateAndNormalizeDate } from './utils/date-validation.js';
 
 interface GoogleCalendarConfig {
   clientId: string;
@@ -302,6 +303,7 @@ export class GoogleCalendarClient {
 
 /**
  * Función helper para crear eventos con formato simplificado
+ * Las fechas se normalizan a formato Zulu time (ISO 8601 UTC sin offset)
  */
 export function createSimpleEvent(
   title: string,
@@ -314,16 +316,19 @@ export function createSimpleEvent(
 ): calendar_v3.Schema$Event {
   const defaultTimeZone = timeZone || process.env.DEFAULT_TIMEZONE || 'Atlantic/Canary';
   
+  const normalizedStart = validateAndNormalizeDate(start);
+  const normalizedEnd = validateAndNormalizeDate(end);
+  
   const event: calendar_v3.Schema$Event = {
     summary: title,
     description,
     location,
     start: {
-      dateTime: start,
+      dateTime: normalizedStart,
       timeZone: defaultTimeZone,
     },
     end: {
-      dateTime: end,
+      dateTime: normalizedEnd,
       timeZone: defaultTimeZone,
     },
   };

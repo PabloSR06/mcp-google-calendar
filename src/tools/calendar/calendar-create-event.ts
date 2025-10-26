@@ -12,12 +12,12 @@ export function registerGoogleCreateEvent(
     {
       calendarId: z.string().optional().describe('ID del calendario (por defecto: primary)'),
       title: z.string().describe('Título del evento'),
-      start: z.string().describe('Fecha/hora de inicio en formato ISO (ej: 2023-12-01T10:00:00Z)'),
-      end: z.string().describe('Fecha/hora de fin en formato ISO'),
+      start: z.string().describe('Fecha/hora de inicio en formato ISO 8601 Zulu time (ej: 2023-12-01T10:00:00Z).'),
+      end: z.string().describe('Fecha/hora de fin en formato ISO 8601 Zulu time (ej: 2023-12-01T11:00:00Z).'),
       description: z.string().optional().describe('Descripción del evento (opcional)'),
       location: z.string().optional().describe('Ubicación del evento (opcional)'),
       attendees: z.array(z.string().email()).optional().describe('Lista de emails de los invitados (opcional)'),
-      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env'),
+      timeZone: z.string().optional().describe('Zona horaria en formato IANA (ej: America/New_York, Atlantic/Canary). Por defecto usa DEFAULT_TIMEZONE del .env. Esta zona se usa para interpretar la hora Zulu en el calendario'),
     },
     async (args) => {
       try {
