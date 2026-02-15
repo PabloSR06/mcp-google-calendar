@@ -245,7 +245,7 @@ export class GoogleCalendarClient {
     task: tasks_v1.Schema$Task
   ): Promise<tasks_v1.Schema$Task> {
     try {
-      const response = await this.tasks.tasks.update({
+      const response = await this.tasks.tasks.patch({
         tasklist: taskListId,
         task: taskId,
         requestBody: task,
